@@ -100,7 +100,8 @@ public class ImdbUtil {
 							continue;
 						}
 						double score = new JaroWinklerDistance().apply(nfoFileName, entryName);
-						if (score <= 0.85) { // threshold to add candidate to map. XXX it should be adjusted
+						if (score <= 0.85) { // threshold to add candidate to map. XXX it should be adjusted.
+											// The value 0.5 should be enough to insert relevant candidate.
 							candidates.put(entry, Double.valueOf(score));
 						}
 					}
