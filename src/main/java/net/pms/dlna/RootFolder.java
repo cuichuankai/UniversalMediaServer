@@ -61,7 +61,6 @@ import net.pms.util.FilePermissions;
 import net.pms.util.FileUtil;
 import net.pms.util.FileWatcher;
 import net.pms.util.ProcessUtil;
-import net.pms.util.Rational;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -662,12 +661,11 @@ public class RootFolder extends DLNAResource {
 
 		if (Platform.isMac()) {
 			LOGGER.debug("Adding iPhoto folder");
-			InputStream inputStream = null;
-
-			try {
-				// This command will show the XML files for recently opened iPhoto databases
-				Process process = Runtime.getRuntime().exec("defaults read com.apple.iApps iPhotoRecentDatabases");
-				inputStream = process.getInputStream();
+			// This command will show the XML files for recently opened iPhoto databases
+			try (InputStream inputStream = Runtime.getRuntime()
+				.exec("defaults read com.apple.iApps iPhotoRecentDatabases")
+				.getInputStream()
+			) {
 				List<String> lines = IOUtils.readLines(inputStream, Charset.defaultCharset());
 				LOGGER.debug("iPhotoRecentDatabases: {}", lines);
 
@@ -727,13 +725,6 @@ public class RootFolder extends DLNAResource {
 				}
 			} catch (XmlParseException | URISyntaxException | IOException e) {
 				LOGGER.error("Something went wrong with the iPhoto Library scan: ", e);
-			} finally {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 		}
 
